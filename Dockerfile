@@ -1,9 +1,18 @@
-FROM golang:1.13
+FROM golang:1.14
 
-WORKDIR /go/src/app
-COPY . .
+ENV GOPATH /go
+RUN apt-get update && \
+    apt-get install librdkafka-dev
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+WORKDIR /go/src/github.com/im-so-sorry/streaming-vk
+ADD . /go/src/github.com/im-so-sorry/streaming-vk
+RUN go install github.com/im-so-sorry/streaming-vk
 
-CMD ["app"]
+ENTRYPOINT /go/bin/streaming-vk
+
+#RUN go get -d -v ./...
+#RUN go install -v ./...
+
+#RUN go build
+
+CMD ["streaming-vk"]

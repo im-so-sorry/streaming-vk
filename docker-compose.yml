@@ -6,6 +6,7 @@ services:
     env_file: .env
     networks:
       - streaming-network
+    command: streaming-vk
 
 
 networks:
