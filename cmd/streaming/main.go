@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/im-so-sorry/streaming-vk/pkg/brokers/kafka"
 	"github.com/im-so-sorry/streaming-vk/pkg/vk"
 	"log"
 )
@@ -20,5 +21,21 @@ func main() {
 
 	log.Println(rules)
 
-	client.Stream(v, 1)
+	messageChan := make(chan []byte)
+
+	producer := kafka.Producer{}
+
+	producer.Initialize("localhost:9093", 0)
+
+	go func() {
+		for message := range messageChan {
+			err := producer.Produce(message, "vk_stream")
+
+			if err != nil {
+				panic(err)
+			}
+		}
+	}()
+
+	client.Stream(v, 1, messageChan)
 }

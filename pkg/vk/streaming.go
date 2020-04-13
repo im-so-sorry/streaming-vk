@@ -207,7 +207,7 @@ type StreamResponse struct {
 	ServiceMessage ServiceMessage
 }
 
-func (c *Client) Stream(credentials StreamingAuth, streamsCount int) {
+func (c *Client) Stream(credentials StreamingAuth, streamsCount int, messageChan chan []byte) {
 
 	var wg sync.WaitGroup
 	interruptChannels := make([]chan struct{}, streamsCount)
@@ -243,7 +243,7 @@ func (c *Client) Stream(credentials StreamingAuth, streamsCount int) {
 			defer close(done)
 
 			go func() {
-				var streamMessage StreamResponse
+				//var streamMessage StreamResponse
 				for {
 					_, message, err := c.ReadMessage()
 					if err != nil {
@@ -251,12 +251,8 @@ func (c *Client) Stream(credentials StreamingAuth, streamsCount int) {
 						done <- struct{}{}
 						return
 					}
-					if err := json.Unmarshal(message, &streamMessage); err != nil {
-						log.Println("unmarshal response json failed:", err)
-						continue
-					}
+					messageChan <- message
 					log.Printf("recv: %s", message)
-					log.Println(streamMessage)
 				}
 			}()
 
