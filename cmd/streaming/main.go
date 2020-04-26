@@ -3,20 +3,29 @@ package main
 import (
 	"github.com/im-so-sorry/streaming-vk/pkg/brokers/kafka"
 	"github.com/im-so-sorry/streaming-vk/pkg/vk"
+	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	vkToken := os.Getenv("VK_TOKEN")
+	kafkaHost := os.Getenv("KAFKA_HOST")
+	kafkaProduceTopic := os.Getenv("KAFKA_PRODUCE_TOPIC")
+
 	client := vk.Client{}
 
-	client.Initialize("da776f3bda776f3bda776f3b83da1fbe7cdda77da776f3b861a30cb5acd2a8da94f406b")
+	client.Initialize(vkToken)
 
 	v, _ := client.GetServerUrl()
 
 	log.Println("host:", v.Endpoint, "key:", v.Key)
 
-	res, _ := client.AddRule(v, vk.Rule{"vk", "vk"})
-	log.Println(res)
 	rules, _ := client.GetRules(v)
 
 	log.Println(rules)
@@ -25,15 +34,20 @@ func main() {
 
 	producer := kafka.Producer{}
 
-	producer.Initialize("localhost:9093", 0)
+	producer.Initialize(kafkaHost, 0)
 
 	go func() {
 		for message := range messageChan {
-			err := producer.Produce(message, "vk_stream")
+			log.Println("Sending message....")
+			log.Println(kafkaProduceTopic)
+			err := producer.Produce(message, kafkaProduceTopic)
 
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
+			} else {
+				log.Println("Message send...")
 			}
+
 		}
 	}()
 

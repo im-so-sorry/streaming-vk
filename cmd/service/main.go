@@ -41,7 +41,7 @@ func main() {
 
 	client := vk.Client{}
 
-	client.Initialize("da776f3bda776f3bda776f3b83da1fbe7cdda77da776f3b861a30cb5acd2a8da94f406b")
+	client.Initialize("")
 
 	auth, _ := client.GetServerUrl()
 

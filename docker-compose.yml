@@ -6,8 +6,11 @@ services:
     env_file: .env
     networks:
       - streaming-network
+      - barad-dur_barad-dur
     command: streaming-vk
 
 
 networks:
   streaming-network:
+  barad-dur_barad-dur:
+    external: true
