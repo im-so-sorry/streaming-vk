@@ -50,8 +50,8 @@ func (c *Client) GetServerUrl() (StreamingAuth, error) {
 }
 
 type Rule struct {
-	Tag   string
-	Value string
+	Tag   string `json:"tag"`
+	Value string `json:"value,omitempty"`
 }
 
 type ErrorMessage struct {
