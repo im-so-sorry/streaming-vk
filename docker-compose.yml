@@ -2,13 +2,25 @@ version: '3'
 
 services:
   worker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file: .env
     networks:
       - streaming-network
       - barad-dur_barad-dur
     command: streaming-vk
 
+  service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+
+    env_file: .env
+    networks:
+      - streaming-network
+      - barad-dur_barad-dur
+    command: service-vk
 
 networks:
   streaming-network:
